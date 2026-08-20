@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Mechanics & Trajectory Lab</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --accent: #38bdf8;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        input {
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .result-box {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .result-box span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .result-box strong {
+            font-size: 1.3rem;
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Physics Mechanics Lab</h1>
+            <p>Interactive 2D Projectile Motion and Kinematics Calculator</p>
+        </header>
+
+        <div class="card">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="velocity">Initial Velocity (v₀) [m/s]</label>
+                    <input type="number" id="velocity" value="25" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label for="angle">Launch Angle (θ) [degrees]</label>
+                    <input type="number" id="angle" value="45" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label for="height">Initial Height (y₀) [m]</label>
+                    <input type="number" id="height" value="0" step="0.1">
+                </div>
+            </div>
+
+            <button onclick="calculateMotion()">Compute Kinematics</button>
+
+            <div class="results-grid">
+                <div class="result-box">
+                    <span>Flight Time</span>
+                    <strong id="timeRes">3.61 s</strong>
+                </div>
+                <div class="result-box">
+                    <span>Max Height</span>
+                    <strong id="heightRes">15.93 m</strong>
+                </div>
+                <div class="result-box">
+                    <span>Total Horizontal Range</span>
+                    <strong id="rangeRes">63.71 m</strong>
+                </div>
+                <div class="result-box">
+                    <span>Impact Velocity</span>
+                    <strong id="impactRes">25.00 m/s</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateMotion() {
+            const v0 = parseFloat(document.getElementById('velocity').value);
+            const deg = parseFloat(document.getElementById('angle').value);
+            const y0 = parseFloat(document.getElementById('height').value);
+            const g = 9.80665;
+
+            const rad = deg * (Math.PI / 180);
+            const vx = v0 * Math.cos(rad);
+            const vy = v0 * Math.sin(rad);
+
+            // Time of flight: t = [vy + sqrt(vy^2 + 2*g*y0)] / g
+            const flightTime = (vy + Math.sqrt(Math.pow(vy, 2) + 2 * g * y0)) / g;
+
+            // Maximum height: H = y0 + (vy^2) / (2*g)
+            const maxHeight = y0 + (Math.pow(vy, 2) / (2 * g));
+
+            // Horizontal range: R = vx * t
+            const range = vx * flightTime;
+
+            // Final Impact Velocity: vf = sqrt(vx^2 + (vy - g*t)^2)
+            const vyFinal = vy - (g * flightTime);
+            const impactVel = Math.sqrt(Math.pow(vx, 2) + Math.pow(vyFinal, 2));
+
+            document.getElementById('timeRes').textContent = flightTime.toFixed(2) + " s";
+            document.getElementById('heightRes').textContent = maxHeight.toFixed(2) + " m";
+            document.getElementById('rangeRes').textContent = range.toFixed(2) + " m";
+            document.getElementById('impactRes').textContent = impactVel.toFixed(2) + " m/s";
+        }
+
+        // Run once on load
+        calculateMotion();
+    </script>
+</body>
+</html>
